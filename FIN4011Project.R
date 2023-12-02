@@ -14,6 +14,11 @@ prices <- Cl(SPY) # Closing prices of SPY
 returns <- dailyReturn(prices) 
 mean_volatility <- sd(returns)
 print(mean_volatility)*100
+realized_volatility <- runSD(returns, n = 252)
+
+historical_vol_ts <- ts(realized_volatility, start = c(2010), frequency = 252)
+
+plot(historical_vol_ts, xlab = "Year", ylab = "Volatility", main = "Historical Volatility of SPY")
 
 # Histogram of Daily Returns
 ggplot(data = data.frame(returns = coredata(returns)), aes(x = returns)) +
@@ -34,6 +39,7 @@ print(box_test_results)
 arch_test_results <- ArchTest(returns)
 print(arch_test_results)
 
+#garch portion
 garch_mod <- ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
                            mean.model = list(armaOrder = auto.arima(returns)$arma, include.mean = TRUE))
 
@@ -47,7 +53,7 @@ print(garch_fit)
 garch_volatility <- sigma(garch_fit)
 
 # Create a time series object
-garch_vol_ts <- ts(garch_volatility, start = c(2010), frequency = 365)
+garch_vol_ts <- ts(garch_volatility, start = c(2010), frequency = 252)
 
 # Plot the GARCH volatility
 plot(garch_vol_ts, xlab = "Year", ylab = "Volatility", main = "GARCH Volatility [1,1]")
@@ -65,12 +71,12 @@ print(egarch_fit)
 egarch_volatility <- sigma(egarch_fit)
 
 # Create a time series object
-egarch_vol_ts <- ts(egarch_volatility, start = c(2010), frequency = 365)
+egarch_vol_ts <- ts(egarch_volatility, start = c(2010), frequency = 252)
 
 # Plot the EGARCH volatility
 plot(egarch_vol_ts, xlab = "Year", ylab = "Volatility", main = "EGARCH Volatility [1,1]")
 
-
+#tgarch portion
 tgarch_mod <- ugarchspec(variance.model = list(model = "fGARCH",
                           submodel = "TGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = auto.arima(returns)$arma, 
                                             include.mean = TRUE))
@@ -82,7 +88,7 @@ print(tgarch_fit)
 tgarch_volatility <- sigma(tgarch_fit)
 
 # Create a time series object
-tgarch_vol_ts <- ts(tgarch_volatility, start = c(2010), frequency = 365)
+tgarch_vol_ts <- ts(tgarch_volatility, start = c(2010), frequency = 252)
 
-# Plot the EGARCH volatility
+# Plot the tGARCH volatility
 plot(tgarch_vol_ts, xlab = "Year", ylab = "Volatility", main = "tGARCH Volatility [1,1]")
