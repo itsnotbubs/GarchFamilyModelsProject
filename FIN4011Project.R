@@ -20,15 +20,16 @@ ggplot(data = data.frame(returns = coredata(returns)), aes(x = returns)) +
   geom_histogram(bins = 50, fill = "blue", color = "black", alpha = 0.7) +
   labs(title = "Histogram of Daily Returns for SPY", x = "Daily Returns", y = "Frequency")
 
-# Check for Stationarity and Unit Roots
+# Check for Stationarity
 adf_test_results <- adf.test(returns, alternative = "stationary") # Augmented Dickey-Fuller Test
-
+print(adf_test_results)
 # Fit a Mean Model  (ARIMA)
 fit_arima <- auto.arima(returns) #auto.arima iterates through different models to achieve the "best fit" based on AIC/BIC
 
 # Ljung-Box Test for serial correlation
 box_test_results <- Box.test(residuals(fit_arima), type = "Ljung-Box")
 
+print(box_test_results)
 # Test to see if ARCH effects are present
 arch_test_results <- ArchTest(returns)
 print(arch_test_results)
